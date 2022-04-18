@@ -1,0 +1,2163 @@
+\documentclass[a4paper,12pt, titlepage]{article}
+\usepackage[english]{babel}
+\usepackage[svgnames]{xcolor} % Required for colour specification
+\newcommand{\plogo}{\fbox{$\mathcal{PL}$}} % Generic dummy publisher logo
+\usepackage[utf8x]{inputenc} % Required for inputting international characters
+\usepackage{longtable}
+\usepackage[a4paper,top=2cm,bottom=1.5cm,left=1cm,right=1cm]{geometry}
+\usepackage{multicol}
+%\usepackage[pdftex]{graphicx}
+\usepackage{fancyhdr}
+\usepackage[final]{pdfpages}
+\usepackage{amssymb,amsmath}
+\usepackage{hyperref}
+%\usepackage{Sweave}
+\usepackage{enumerate}
+\usepackage{float}
+\usepackage{array}
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\usepackage{threeparttable, tablefootnote}
+\usepackage{lscape}
+\usepackage{multirow}
+\usepackage{pdflscape}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{colortbl, xcolor}
+\usepackage{color} 
+\usepackage{arydshln}
+%\usepackage{draftwatermark}
+%\SetWatermarkText{Draft}
+%\SetWatermarkScale{8}
+
+% to coloured verbatim
+\usepackage{fancyvrb}
+\DefineVerbatimEnvironment{verbatim}
+  {Verbatim}
+  {fontsize=\footnotesize,formatcom=\color{blue}}
+
+%\newcommand{\headrulecolor}[1]{\patchcmd{\headrule}{\hrule}{\color{#1}\hrule}{}{}}
+%\newcommand{\footrulecolor}[1]{\patchcmd{\footrule}{\hrule}{\color{#1}\hrule}{}{}}
+
+\pagestyle{fancy}% Change page style to fancy
+\fancyhf{}% Clear header/footer
+\fancyhead[L]{\leftmark}
+\fancyhead[C]{}
+\fancyhead[R]{}
+\fancyfoot[L]{Author: Joan Vila}
+\fancyfoot[R]{Page: \thepage}
+\renewcommand{\headrulewidth}{1.2pt}% Default \headrulewidth is 0.4pt
+\renewcommand{\footrulewidth}{0.8pt}% Default \footrulewidth is 0pt
+
+
+
+\newenvironment{changemargin1}{
+  \begin{list}{}{
+    \setlength{\leftmargin}{-1cm}
+    \setlength{\rightmargin}{1cm}
+    \footnotesize
+  }
+  \item[]
+  }{\end{list}}
+
+\setcounter{tocdepth}{4} 
+\setcounter{secnumdepth}{4}
+%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%
+\title{
+\begin{center}
+\textbf{\Huge {\color{red}``Necessitats de les persones afectades i de les seves famílies''\\
+\
+\\
+\large Núria Codern Bové\\
+\texttt{NCodernBove@gmail.com}}
+\
+\\
+\large Version 3.0}\\
+\
+\\
+{\normalsize - Joan Vila -\\
+\texttt{joanviladomenech@gmail.com}}
+\date{\today} 
+\end{center}
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+\maketitle
+\newpage
+
+\section{Version History}
+\begin{table}[H]
+\centering
+\begin{tabular}{L{2cm}  C{3.5cm}  L{9cm}}
+\hline
+Version  & Effective Date & Changes \\
+\hline
+ &  & \\
+1 & 29-Dec-2021 & Primera Exploració de les dades \\
+ &  & \\
+2 & 28-Feb-2022 & Exploració després de recodificar Núria\\
+ &  & \\
+3 & 16-Apr-2022 & Correcció segons suggeriments de Núria i la majoria de taules es presenten a més eliminat els missings i dividint entre si l'any del diagnóstic va ser abans o després del 2010. A més s'han agrupat els codis postals del lloc de residencia. \\
+ &  & \\
+ &  & \\
+ &  & \\
+\hline
+\end{tabular}
+\end{table}
+\newpage
+\tableofcontents
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+<<echo=FALSE, results='hide', warning=FALSE, error=FALSE, message=FALSE>>=
+rm(list=ls())
+
+library(Hmisc)
+library(gdata)
+library(Epi)
+library(compareGroups)
+library(xtable)
+
+setwd("/Users/jvila/Dropbox/NCodern/MalalMinor/")
+
+load("./dat/datok.rda")
+dat <- datok
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+\section{Introducció}
+En el següents enllaç es pot visualitzar l'enquesta en:
+\begin{itemize} 
+\item \href{https://forms.office.com/Pages/DesignPage.aspx?fragment=FormId\%3DBSlj3yvAJ0eMOBqmuEbiMn9L22zWsP1Olj4ic_qzLGNUMFVZN0c1MEJHNENSNU40MkNBVEkzM1pQUS4u\%26Token\%3Db2520e8eba994964955bf9f40ad9aa41}{català} 
+\item \href{https://forms.office.com/Pages/DesignPage.aspx?fragment=FormId\%3DBSlj3yvAJ0eMOBqmuEbiMn9L22zWsP1Olj4ic_qzLGNUOE0ySlBLOEowVVNZRTNNWEtQMzZBSjdRNS4u\%26Token\%3D0dce47e820094ef2a2de31d74b68d868}{castellà} 
+\end{itemize}
+
+A la data d'aquesta versió de l'informe, s'han recollit dades de \Sexpr{nrow(dat)} enquestes. 
+<<echo=FALSE, results='markup'>>=
+stat.table(list(Idioma =lang), 
+    list(N=count(),'%'=percent(lang)),data=dat, margins=T) 
+@
+S'eliminen per ser clarament errors (No s'ha contestat a la relació que té amb la persona afectada i la resta preguntes las té en blanc.) les següents enquestes:
+<<echo=FALSE, results='markup'>>=
+subset(dat, is.na(relacio) & is.na(nomalaltia))[, c("lang", "ID","relacio", "nomalaltia")]
+dat <- datok
+dat$xxx <- with(dat, ifelse(is.na(relacio) & is.na(nomalaltia), 1, 0))
+dat$xxx <- with(dat, ifelse(lang=="CAT" & ID==125, 1, xxx))
+dat <- subset(dat, xxx==0)
+@
+També s'eliminen \Sexpr{sum(is.na(dat$nomalaltia))} enquestes per no tenir el diagnòstic:
+<<echo=FALSE, results='markup'>>=
+subset(dat, is.na(nomalaltia))[, c("lang", "ID","relacio", "nomalaltia")]
+dat <- subset(dat, !is.na(nomalaltia))
+@
+
+Per tant, les enquestes finalment analitzades són: {\Large {\color{red}\Sexpr{nrow(dat)}}}.
+\
+\\
+
+
+Les enquestes s'han omplert el següents dies:
+<<echo=FALSE, results='markup'>>=
+with(dat, table(DiaEnq, lang, useNA = "ifany"))
+@
+A continuació s'exploren els potencials problemes de la base de dades.\\
+
+La majoria de les taules que hi ha a continuació es presenten 
+\begin{itemize}
+\item tenint en compte els missings 
+\item i a continuació eliminat els missings i dividint entre si l’any del diagnòstic va ser abans o després del 2010.
+\end{itemize}
+
+Notar que aquesta classificació d’abans/després de 2010 té \Sexpr{sum(is.na(dat$before2010))} missings. 
+<<echo=FALSE, results='markup'>>=
+x <- with(dat, table(before2010, useNA = "ifany"))
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Dades personals}
+<<echo=FALSE, results='hide'>>=
+xvari <- "relacio"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup'>>=
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\subsection{\Sexpr{Hmisc::label(dat$nomalaltia)}}
+<<echo=FALSE, results='markup'>>=
+options(width = 180)
+x <- with(dat, table(nomalaltia, useNA = "ifany"))
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\subsection{\Sexpr{Hmisc::label(dat$anyneix)}}
+<<echo=FALSE, results='markup'>>=
+x <- with(dat, table(anyneix, useNA = "ifany"))
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "sexeafectat"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup'>>=
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\subsection{\Sexpr{Hmisc::label(dat$age)}}
+He calculat la edat a partir de ``\Sexpr{Hmisc::label(dat$anyneix)}'' i ``\Sexpr{Hmisc::label(dat$DiaEnq)}'', assumint que van neixer el 30 de juny.
+<<echo=FALSE, results='markup'>>=
+x <- with(dat, table(age, useNA = "ifany"))
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup'>>=
+paste("mean = ", round(mean(dat$age, na.rm=T), 1), "; DE = ", round(sd(dat$age, na.rm=T), 2), sep="")
+summary(as.numeric(dat$age))
+@
+Separant per any diagnòstic:
+<<echo=FALSE, results='markup'>>=
+with(dat, by(age, before2010, function(x) round(c(mean(x,na.rm=TRUE),sd(x,na.rm=TRUE)), 2)))
+with(dat, by(age, before2010, function(x) summary(as.numeric(x))))
+@
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "estudisafec"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup'>>=
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "vaescola"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(subset(dat, !is.na(infant) & infant=="<=12anys")[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+\textbf{Nota}: aquesta taula s'ha calculat entre els \Sexpr{sum(dat$infant =="<=12anys", na.rm=T)} entrevistats amb edats $\leq$ 12a i no hi ha ningú diagnosticat abans del 2010.
+
+<<echo=FALSE, results='markup'>>=
+subdat <- subset(dat, !is.na(infant) & infant=="<=12anys")
+subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Si no sou la persona afectada, responeu les preguntes següents}
+A partir de la variable \Sexpr{Hmisc::label(dat$relacio)} (veure més amunt) si ha contestat alguna cosa diferent a ``Soc la persona afectada'' considero que NO és la persona afectada. \\
+<<echo=FALSE, results='markup'>>=
+x <- with(dat, table(afectat, useNA = "ifany"))
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+
+
+\subsection{\Sexpr{Hmisc::label(dat$edat)}}
+<<echo=FALSE, results='markup'>>=
+x <- with(subset(dat, !is.na(afectat) & afectat =="N"), table(edat, useNA = "ifany"))
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup'>>=
+with(subset(dat, !is.na(afectat) & afectat =="N"), paste("mean = ", round(mean(edat, na.rm=T), 1), "; DE = ", round(sd(edat, na.rm=T), 2), sep=""))
+with(subset(dat, !is.na(afectat) & afectat =="N"), by(age, before2010, function(x) round(c(mean(x,na.rm=TRUE),sd(x,na.rm=TRUE)), 2)))
+with(subset(dat, !is.na(afectat) & afectat =="N"), by(age, before2010, function(x) summary(as.numeric(x))))
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\subsection{\Sexpr{Hmisc::label(dat$sexe)}}
+<<echo=FALSE, results='markup'>>=
+x <- with(subset(dat, !is.na(afectat) & afectat =="N"), table(sexe, useNA = "ifany"))
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup'>>=
+xvari <- "sexe"
+subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\subsection{\Sexpr{Hmisc::label(dat$resideix)}}
+A partir del codi postal he fet agrupacions. Segurament caldrà agrupar més, però jo no sé quin criteri seguir.
+<<echo=FALSE, results='markup'>>=
+x <- table(dat$resideix, useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+Notar que hi ha molts missing. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\subsection{\Sexpr{Hmisc::label(dat$estudis)}}
+<<echo=FALSE, results='markup'>>=
+x <- with(subset(dat, !is.na(afectat) & afectat =="N"), table(estudis, useNA = "ifany"))
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+xvari <- "estudis"
+subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Sobre la malaltia i el procés de diagnòstic}
+<<echo=FALSE, results='hide'>>=
+xvari <- "sospita"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\subsection{\Sexpr{Hmisc::label(dat$anydiag)}}
+<<echo=FALSE, results='markup'>>=
+x <- with(dat, table(anydiag, useNA = "ifany"))
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+Hi ha ``missing'' o valors de més de 4 digits. Es mostren a continuació:
+<<echo=FALSE, results='markup'>>=
+subset(dat, is.na(anydiag) | nchar(anydiag)>4)[, c("lang", "ID", "anydiag")]
+@
+
+\subsection{\Sexpr{Hmisc::label(dat$before2010)}}
+A partir de la informació anterior s'han classificat les enquestes segons si van ser o no diagnosticats abans de l'any 2010:
+<<echo=FALSE, results='markup'>>=
+x <- with(dat, table(before2010, useNA = "ifany"))
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\subsection{\Sexpr{Hmisc::label(dat$tempsproces)}}
+<<echo=FALSE, results='markup'>>=
+x <- with(dat, table(tempsproces, useNA = "ifany"))
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "TempsDiag"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 12), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\subsection{\Sexpr{Hmisc::label(dat$edatdiag)}}
+<<echo=FALSE, results='markup'>>=
+x <- with(dat, table(edatdiag, useNA = "ifany"))
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "AgeDiag"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+La informació anterior s'ha agrupat de la següent manera:
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+\newpage
+\begin{landscape}
+De totes formes no hi haria d'haver incongruències entre el temps que van trigar el procés diagnòstic i l'edat de quan el van diagnosticar:
+<<echo=FALSE, results='markup'>>=
+with(dat, table(TempsDiag, AgeDiag, useNA = "ifany"))
+@
+Potser valdria la pena corregir-ho???
+\end{landscape}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "vaprimersinto"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "professprimer"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "prefessinicia"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "quantsprofess"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "suporprofess"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "inforebuda"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+
+En aquesta pregunta hi ha tants ``missing'' que decidim que no s'ha entés la pregunta.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Tractament, pla de cures, rehabilitació, seguiment de la malaltia}
+<<echo=FALSE, results='hide'>>=
+xvari <- "assessgen"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "CDIAP"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "Fisioterapia"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "grupsSuport"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "Infermeria"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "Logopdia"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "MedFami"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "Nutricio"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "Pediatria"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "Psicologia"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "Rehabilitacio"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "ServEspe"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "TreballSoci"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "AltresServeis"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "SatisEspeciali"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "SatisCoordi"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "PresaDecisi"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "SuporPorfess"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "SuportTreball"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "AjutEco"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "DeixaTreball"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "ReduccioEs"
+@
+
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+Es seleccionen els que \Sexpr{Hmisc::label(dat[, "DeixaTreball"])} = ``Sí''.
+<<echo=FALSE, results='markup'>>=
+x <- table(subset(dat, !is.na(DeixaTreball) & DeixaTreball=="Sí")[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+subdat <- subset(dat, !is.na(DeixaTreball) & DeixaTreball=="Sí")
+subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+# subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "PagarTx"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "PagarProdu"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "PatgarAdap"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "PagarTecno"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "PagarBolquer"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "Pagarpersona"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "PagarRehab"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "PagarPsico"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "AltresPaga"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "Prestacions"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{Vida quotidiana, escola, treball}
+<<echo=FALSE, results='hide'>>=
+xvari <- "SuporMestre"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "CoordinaMestre"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "DecisioMestre"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "EscolaInfermeria"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "Vetllador"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "AdaptacioEntorn"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "AdaptacioTecno"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "AdapacioPriscomot"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "NecessitaLogope"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "MestreSuport"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "PsicoPedagog"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "AltresNecessita"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "ExplicaInfant"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "ExplicaAmics"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "ExplicaFamilia"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(dat[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+# subdat <- subset(dat, !is.na(afectat) & afectat =="N")
+# subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+\section{ÀMBIT LABORAL}
+En el questionari s'indicava ``Si sou la persona afectada, responeu les preguntes següent. També pot respondre-les una persona de l'entorn''.\\
+<<echo=FALSE, results='markup'>>=
+table(dat$afectat, useNA = "ifany")
+@
+A les anàlisis d'aquesta secció s'han seleccionat els que han contestat que ``Sí que és la persona afectada'', es dir, s'han seleccionat \Sexpr{sum(dat$afectat=="Y", na.rm=T)}, enquestes. 
+<<echo=FALSE, results='hide'>>=
+xvari <- "SuportSalutLabor"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(subset(dat, !is.na(afectat) & afectat =="Y")[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+subdat <- subset(dat, !is.na(afectat) & afectat =="Y")
+subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+# subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "SuportCompanys"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(subset(dat, !is.na(afectat) & afectat =="Y")[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+subdat <- subset(dat, !is.na(afectat) & afectat =="Y")
+subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+# subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "AtenInfer"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(subset(dat, !is.na(afectat) & afectat =="Y")[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+subdat <- subset(dat, !is.na(afectat) & afectat =="Y")
+subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+# subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "FeinaWC"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(subset(dat, !is.na(afectat) & afectat =="Y")[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+subdat <- subset(dat, !is.na(afectat) & afectat =="Y")
+subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+# subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "FeinaTecno"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(subset(dat, !is.na(afectat) & afectat =="Y")[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+subdat <- subset(dat, !is.na(afectat) & afectat =="Y")
+subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+# subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "FeinaTelema"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(subset(dat, !is.na(afectat) & afectat =="Y")[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+subdat <- subset(dat, !is.na(afectat) & afectat =="Y")
+subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+# subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "AltresFeina"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(subset(dat, !is.na(afectat) & afectat =="Y")[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+subdat <- subset(dat, !is.na(afectat) & afectat =="Y")
+subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+# subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "FeinaExplica"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(subset(dat, !is.na(afectat) & afectat =="Y")[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+subdat <- subset(dat, !is.na(afectat) & afectat =="Y")
+subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+# subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "SalutLabora"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(subset(dat, !is.na(afectat) & afectat =="Y")[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+subdat <- subset(dat, !is.na(afectat) & afectat =="Y")
+subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+# subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
+<<echo=FALSE, results='hide'>>=
+xvari <- "AmicsFeina"
+@
+\subsection{\Sexpr{Hmisc::label(dat[, xvari])}}
+<<echo=FALSE, results='markup'>>=
+x <- table(subset(dat, !is.na(afectat) & afectat =="Y")[, xvari], useNA = "ifany")
+x <- cbind(x, round(prop.table(x)*100, 2))
+attr(x, "dimnames")[[2]] <- c("n", "%")
+x
+@
+<<echo=FALSE, results='markup', warning=FALSE>>=
+# xvari <- "estudis"
+subdat <- subset(dat, !is.na(afectat) & afectat =="Y")
+subdat <- subset(subdat, subdat[, xvari]!="Missing/No aplicable")
+# subdat <- subset(dat, dat[, xvari]!="Missing/No aplicable")
+subdat[, xvari] <- factor(subdat[, xvari])
+subdat[, xvari] <- factor(subdat[, xvari], levels(subdat[, xvari])[levels(subdat[, xvari])%nin%"Missing/No aplicable"])
+subdat <- subdat[, c("before2010", xvari)]
+print(createTable(compareGroups(before2010 ~ ., data=subdat, max.xlev = 15), 
+            show.all = TRUE, all.last = TRUE), header.labels = c("all" = "TOTS"))
+@
+\end{document}
+
+       
+        
+            
+
